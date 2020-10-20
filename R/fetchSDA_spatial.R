@@ -81,7 +81,7 @@ fetchSDA_spatial <- function(x, by.col = "mukey", method = 'feature',
     stop(paste0("Unknown mapunit identifier (",by.col,")"), call. = FALSE)
   }
   
-  mukey.chunk <- soilDB::makeChunks(mukey.list, chunk.size)
+  mukey.chunk <- makeChunks(mukey.list, chunk.size)
   s <- NULL
   
   # select method
@@ -189,8 +189,10 @@ fetchSDA_spatial <- function(x, by.col = "mukey", method = 'feature',
   s <- NULL
   if (!is.null(sp.res.sub)) {
     
-    s <- soilDB::processSDA_WKT(sp.res.sub)
-
+    sp.res.sub$geom <- sf::st_as_sfc(wk::as_wkt(sp.res.sub$geom))
+    sfobj <- sf::st_as_sf(sp.res.sub)
+    sfobj <- sf::st_set_crs(sfobj, sf::st_crs(4326))
+    s <- sf::as_Spatial(sfobj)
     
     t2 <- Sys.time()
     tdif <- difftime(t2, t1, "secs")
